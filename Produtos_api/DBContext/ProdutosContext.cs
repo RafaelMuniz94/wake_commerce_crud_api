@@ -1,5 +1,5 @@
 ﻿using System;
-using Produtos_api.Models;
+using Produtos_api.Domain.Models;
 
 namespace Produtos_api.DBContext
 {

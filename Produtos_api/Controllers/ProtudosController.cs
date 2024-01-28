@@ -2,35 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Produtos_api.Application.VIewModels;
 using Produtos_api.DBContext;
-using Produtos_api.Models;
+using Produtos_api.Domain.Dtos;
+using Produtos_api.Domain.Models;
 
 namespace Produtos_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProdutosController : Controller
+    public class ProdutosController : ControllerBase
     {
 
         private readonly ProdutosContext produtosDbContext;
+        private readonly IMapper _mapper;
 
-        public ProdutosController(ProdutosContext dbContext)
+        public ProdutosController(ProdutosContext dbContext,IMapper mapperInjected)
         {
             this.produtosDbContext = dbContext;
+            this._mapper = mapperInjected;
         }
        
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult RetornarProdutos()
         {
         
             List<Produto> produtos = produtosDbContext.Produtos;
-            return Ok(produtos);
+            List<ProdutoDTO> produtoDto = _mapper.Map<List<ProdutoDTO>>(produtos);
+            return Ok(produtoDto);
         }
 
         
         [HttpGet("{id}")]
-        public IActionResult GetByID(Guid id)
+        public IActionResult RetornarProdutoPorID(Guid id)
         {
            
             Produto produto = produtosDbContext.Produtos.SingleOrDefault(pro => pro.ID == id);
@@ -39,25 +45,37 @@ namespace Produtos_api.Controllers
             {
                 return NotFound("Não Foi encontrado o produto!");
             }
-            return Ok(produto);
+
+            ProdutoDTO produtoDto = _mapper.Map<ProdutoDTO>(produto);
+            return Ok(produtoDto);
         }
 
        
         [HttpPost]
-        public IActionResult Post([FromBody]Produto produto)
+        public IActionResult CriarProduto([FromBody] CriarProdutoViewModel produto)
         {
-           
-            Produto produtoCadastro = new Produto(produto.Nome, produto.Estoque, produto.Valor);
+            if (!ModelState.IsValid)
+            {
+                ValidarEntrada();
+            }
+            Produto produtoCadastro = new Produto(produto.nomeProduto, produto.quantidadeEstoque, produto.valorProduto);
             produtosDbContext.Produtos.Add(produtoCadastro);
 
-            return Created($"Produto ID:{produtoCadastro.ID} criado com sucesso!", produtoCadastro);
+            ProdutoDTO produtoDTO = _mapper.Map<ProdutoDTO>(produtoCadastro);
+
+            return Created($"api/Produtos/{produtoDTO.id}", produtoDTO);
         }
 
         
         [HttpPut("{id}")]
-        public IActionResult Update(Guid id, [FromBody]Produto produto)
+        public IActionResult AtualizarProduto(Guid id, [FromBody] AtualizarProdutoViewModel produto)
         {
-            
+
+            if (!ModelState.IsValid)
+            {
+                ValidarEntrada();
+            }
+
             Produto produtoAtualizado = produtosDbContext.Produtos.SingleOrDefault(pro => pro.ID == id);
 
             if(produtoAtualizado == null)
@@ -65,9 +83,9 @@ namespace Produtos_api.Controllers
                 return NotFound("O produto não foi encontrado!");
             }
 
-            produtoAtualizado.Nome = produto.Nome;
-            produtoAtualizado.Valor = produto.Valor;
-            produtoAtualizado.Estoque = produto.Estoque;
+            produtoAtualizado.Nome = produto.nomeProduto ?? produtoAtualizado.Nome;
+            produtoAtualizado.Valor = produto.valorProduto ?? produtoAtualizado.Valor;
+            produtoAtualizado.Estoque = produto.quantidadeEstoque ?? produtoAtualizado.Estoque;
 
 
             return Accepted();
@@ -75,7 +93,7 @@ namespace Produtos_api.Controllers
 
       
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public IActionResult DeletarProduto(Guid id)
         {
           
             Produto produtoDeleteado = produtosDbContext.Produtos.SingleOrDefault(pro => pro.ID == id);
@@ -89,6 +107,14 @@ namespace Produtos_api.Controllers
 
             return NoContent();
 
+        }
+
+        private IActionResult ValidarEntrada()
+        {
+            
+           string errorMessages = string.Join("; ", ModelState.Values.SelectMany(model => model.Errors).Select(error => error.ErrorMessage));
+                return BadRequest(errorMessages);
+            
         }
     }
 }

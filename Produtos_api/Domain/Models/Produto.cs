@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Produtos_api.Models
+namespace Produtos_api.Domain.Models
 {
 	public class Produto
 	{
