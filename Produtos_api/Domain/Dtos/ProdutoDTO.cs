@@ -10,7 +10,7 @@ namespace Produtos_api.Domain.Dtos
         public Guid id { get; set; }
         public string nomeProduto { get; set; }
         public int quantidadeEstoque { get; set; }
-        public double valor { get; set; }
+        public double valorProduto { get; set; }
     }
 }
 
