@@ -1,0 +1,83 @@
+name: Cobertura de teste e Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compilar:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clona Repositorio
+      uses: actions/checkout@v2
+
+    - name: Configura .NET na VM
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.x
+
+    - name: Baixa dependencias dos projetos
+      run: dotnet restore
+
+    - name: Executa a compilacao
+      run: dotnet build --configuration Release
+
+    - name: Criar diretório 'build'
+      run: mkdir -p ./build
+
+    - name: Salvando artefatos da compilacao
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-artifacts
+        path: ./build
+
+  testar:
+    runs-on: ubuntu-latest
+    needs: compilar
+    
+    steps:
+
+    - name: Configura .NET na VM
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.x
+    
+    - name: Baixando Artefatos
+      uses: actions/download-artifact@v2
+      with:
+        name: build-artifacts
+
+    - name: Executa testes
+      run: dotnet test --configuration Release --no-restore
+
+  gerar_assets:
+    needs: [compilar,testar]
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Configura .NET na VM
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.x
+
+    - name: Baixando Artefatos
+      uses: actions/download-artifact@v2
+      with:
+        name: build-artifacts
+
+    - name: Criar diretório 'deployed'
+      run: mkdir -p ./deployed
+
+    - name: Entregando na pasta ./deployed
+      run: |
+        # cp -r ./build ./deployed
+    
+    - name: Mantendo Artefato
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-artofacts
+        path: ./build
+        retention-days: 7
