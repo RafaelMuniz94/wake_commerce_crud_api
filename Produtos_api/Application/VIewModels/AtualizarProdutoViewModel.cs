@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace Produtos_api.Application.VIewModels
 {
 	public class AtualizarProdutoViewModel
@@ -8,8 +9,8 @@ namespace Produtos_api.Application.VIewModels
 		public string? nomeProduto { get; set; }
         public int? quantidadeEstoque { get; set; }
 
-        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "O preço deve ser definido com até duas casas decimais!")]
-        [Range(0, 999999999.99)]
+        
+        [Range(0, 999999999.99, ErrorMessage = "O valor do produto deve ser positivo e com até duas casas Decimais!")]
         public double? valorProduto { get; set; }
     }
 }

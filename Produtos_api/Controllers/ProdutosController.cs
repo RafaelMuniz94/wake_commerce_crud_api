@@ -19,6 +19,8 @@ namespace Produtos_api.Controllers
         private readonly ProdutosContext produtosDbContext;
         private readonly IMapper _mapper;
 
+        private readonly string mensagemProdutoNaoEncontrado = "O produto não foi encontrado!";
+
         public ProdutosController(ProdutosContext dbContext,IMapper mapperInjected)
         {
             this.produtosDbContext = dbContext;
@@ -43,7 +45,7 @@ namespace Produtos_api.Controllers
 
             if(produto == null)
             {
-                return NotFound("Não Foi encontrado o produto!");
+                return NotFound(mensagemProdutoNaoEncontrado);
             }
 
             ProdutoDTO produtoDto = _mapper.Map<ProdutoDTO>(produto);
@@ -56,7 +58,7 @@ namespace Produtos_api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ValidarEntrada();
+                return ValidarEntrada();
             }
             Produto produtoCadastro = new Produto(produto.nomeProduto, produto.quantidadeEstoque, produto.valorProduto);
             produtosDbContext.Produtos.Add(produtoCadastro);
@@ -73,22 +75,24 @@ namespace Produtos_api.Controllers
 
             if (!ModelState.IsValid)
             {
-                ValidarEntrada();
+                return ValidarEntrada();
             }
 
             Produto produtoAtualizado = produtosDbContext.Produtos.SingleOrDefault(pro => pro.ID == id);
 
             if(produtoAtualizado == null)
             {
-                return NotFound("O produto não foi encontrado!");
+                return NotFound(mensagemProdutoNaoEncontrado);
             }
 
             produtoAtualizado.Nome = produto.nomeProduto ?? produtoAtualizado.Nome;
             produtoAtualizado.Valor = produto.valorProduto ?? produtoAtualizado.Valor;
             produtoAtualizado.Estoque = produto.quantidadeEstoque ?? produtoAtualizado.Estoque;
 
+            ProdutoDTO produtoDto = _mapper.Map<ProdutoDTO>(produtoAtualizado);
 
-            return Accepted();
+
+            return Accepted(produtoDto);
         }
 
       
@@ -100,7 +104,7 @@ namespace Produtos_api.Controllers
 
             if (produtoDeleteado == null)
             {
-                return NotFound("O produto não foi encontrado!");
+                return NotFound(mensagemProdutoNaoEncontrado);
             }
 
             produtosDbContext.Produtos.Remove(produtoDeleteado);
