@@ -27,7 +27,7 @@ jobs:
     - name: Criar diretório 'build'
       run: mkdir -p ./build
 
-    - name: Salvando artefatos da compilacao api
+    - name: Salvando artefatos da compilacao api (bin)
       uses: actions/upload-artifact@v2
       with:
         name:  artefatos-api
@@ -36,8 +36,9 @@ jobs:
     - name: Salvando artefatos da compilacao testes
       uses: actions/upload-artifact@v2
       with:
-        name:  artefatos-teste
+        name:  artefatos-teste-build
         path: ./Produtos_api.test/bin/Release/net7.0
+
 
   testar:
     runs-on: ubuntu-latest
@@ -53,10 +54,11 @@ jobs:
     - name: Baixando Artefatos
       uses: actions/download-artifact@v2
       with:
-        name: artefatos-teste
+        name: artefatos-teste-build
+        path: ./testes/
 
     - name: Executa testes
-      run: dotnet test --configuration Release --no-restore
+      run: dotnet test ./testes/Produtos_api.test.dll --configuration Release --no-restore
 
   gerar_assets:
     needs: [compilar,testar]
