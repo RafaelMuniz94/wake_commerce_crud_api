@@ -27,11 +27,17 @@ jobs:
     - name: Criar diretório 'build'
       run: mkdir -p ./build
 
-    - name: Salvando artefatos da compilacao
+    - name: Salvando artefatos da compilacao api
       uses: actions/upload-artifact@v2
       with:
-        name: build-artifacts
-        path: ./build
+        name:  artefatos-api
+        path: ./Produtos_api/bin/Release/net7.0
+
+    - name: Salvando artefatos da compilacao testes
+      uses: actions/upload-artifact@v2
+      with:
+        name:  artefatos-teste
+        path: ./Produtos_api.test/bin/Release/net7.0
 
   testar:
     runs-on: ubuntu-latest
@@ -47,7 +53,7 @@ jobs:
     - name: Baixando Artefatos
       uses: actions/download-artifact@v2
       with:
-        name: build-artifacts
+        name: artefatos-teste
 
     - name: Executa testes
       run: dotnet test --configuration Release --no-restore
@@ -66,7 +72,7 @@ jobs:
     - name: Baixando Artefatos
       uses: actions/download-artifact@v2
       with:
-        name: build-artifacts
+        name: artefatos-api
 
     - name: Criar diretório 'deployed'
       run: mkdir -p ./deployed
@@ -78,6 +84,6 @@ jobs:
     - name: Mantendo Artefato
       uses: actions/upload-artifact@v2
       with:
-        name: build-artofacts
+        name: artefatos-api
         path: ./build
         retention-days: 7
