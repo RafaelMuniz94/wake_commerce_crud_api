@@ -10,7 +10,7 @@ namespace Produtos_api.Application.VIewModels
         public int? quantidadeEstoque { get; set; }
 
         
-        [Range(0, 999999999.99, ErrorMessage = "O valor do produto deve ser positivo e com até duas casas Decimais!")]
+        [Range(0, 999999999.99, ErrorMessage = "O valor do produto deve ser positivo!")]
         public double? valorProduto { get; set; }
     }
 }
