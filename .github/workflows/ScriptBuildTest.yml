@@ -46,6 +46,9 @@ jobs:
     
     steps:
 
+    - name: Clona Repositorio
+      uses: actions/checkout@v2
+
     - name: Configura .NET na VM
       uses: actions/setup-dotnet@v2
       with:
