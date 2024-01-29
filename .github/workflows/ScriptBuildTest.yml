@@ -69,26 +69,16 @@ jobs:
 
     steps:
 
-    - name: Configura .NET na VM
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: 7.x
-
     - name: Baixando Artefatos
       uses: actions/download-artifact@v2
       with:
         name: artefatos-api
+        path: ./deployed/
 
-    - name: Criar diretório 'deployed'
-      run: mkdir -p ./deployed
-
-    - name: Entregando na pasta ./deployed
-      run: |
-        # cp -r ./build ./deployed
     
     - name: Mantendo Artefato
       uses: actions/upload-artifact@v2
       with:
         name: artefatos-api
-        path: ./build
+        path: ./deployed
         retention-days: 7
