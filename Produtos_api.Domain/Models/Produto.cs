@@ -1,6 +1,10 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Produtos_api.Domain.Models
 {
+    [Table("produtos")]
 	public class Produto
 	{
 		public Produto()
@@ -24,6 +28,7 @@ namespace Produtos_api.Domain.Models
             Valor = valor;
         }
 
+        [Key]
         public Guid ID { get; set; }
         public string Nome{ get; set; }
         public int Estoque { get; set; }

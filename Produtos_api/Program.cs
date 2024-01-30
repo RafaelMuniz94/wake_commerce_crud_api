@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Produtos_api.Application.Mappers;
-using Produtos_api.DBContext;
+using Produtos_api.DataBase;
+using Produtos_api.DataBase.Repository;
+using Produtos_api.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddTransient<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddDbContext<ProdutoDbContext>();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
@@ -13,7 +17,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<ProdutosContext>(); // Adicionado objeto de contexto de banco de dados para servir como banco em memoria para desenvolvimento inicial
+//builder.Services.AddSingleton<ProdutosContext>(); // Adicionado objeto de contexto de banco de dados para servir como banco em memoria para desenvolvimento inicial
 builder.Services.AddAutoMapper(typeof(ProdutoMapper)); // Configura processo de mapeamento do DTO.
 var app = builder.Build();
 

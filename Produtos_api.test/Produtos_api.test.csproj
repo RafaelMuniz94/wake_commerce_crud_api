@@ -22,17 +22,20 @@
     </PackageReference>
     <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.15" />
+    <PackageReference Include="Moq.EntityFrameworkCore" Version="7.0.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Produtos_api\Produtos_api.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="Controllers\" />
     <None Remove="TestIntegracao\" />
+    <None Remove="Repository\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="TestIntegracao\" />
+    <Folder Include="Repository\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Produtos_api\Produtos_api.csproj" />
   </ItemGroup>
 </Project>

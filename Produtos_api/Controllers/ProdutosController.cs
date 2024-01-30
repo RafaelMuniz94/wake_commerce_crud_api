@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Produtos_api.Application.VIewModels;
-using Produtos_api.DBContext;
+using Produtos_api.DataBase;
 using Produtos_api.Domain.Dtos;
 using Produtos_api.Domain.Models;
 
@@ -16,32 +16,32 @@ namespace Produtos_api.Controllers
     public class ProdutosController : ControllerBase
     {
 
-        private readonly ProdutosContext produtosDbContext;
+        private readonly IProdutoRepository produtoRepository;
         private readonly IMapper _mapper;
 
         private readonly string mensagemProdutoNaoEncontrado = "O produto não foi encontrado!";
 
-        public ProdutosController(ProdutosContext dbContext,IMapper mapperInjected)
+        public ProdutosController(IProdutoRepository repository,IMapper mapperInjected)
         {
-            this.produtosDbContext = dbContext;
+            this.produtoRepository = repository;
             this._mapper = mapperInjected;
         }
        
         [HttpGet]
-        public IActionResult RetornarProdutos()
+        public async Task<IActionResult> RetornarProdutos()
         {
         
-            List<Produto> produtos = produtosDbContext.Produtos;
+            List<Produto> produtos = await produtoRepository.RetornarListaProdutos();
             List<ProdutoDTO> produtoDto = _mapper.Map<List<ProdutoDTO>>(produtos);
             return Ok(produtoDto);
         }
 
         
         [HttpGet("{id}")]
-        public IActionResult RetornarProdutoPorID(Guid id)
+        public async Task<IActionResult> RetornarProdutoPorID(Guid id)
         {
            
-            Produto produto = produtosDbContext.Produtos.SingleOrDefault(pro => pro.ID == id);
+            Produto produto = await produtoRepository.RetornarProdutoPorId(id);
 
             if(produto == null)
             {
@@ -52,16 +52,31 @@ namespace Produtos_api.Controllers
             return Ok(produtoDto);
         }
 
-       
+        [HttpGet("/")]
+        public async Task<IActionResult> RetornarProdutoPorNome([FromQuery] string nomeProduto)
+        {
+
+            Produto produto = await produtoRepository.RetornarProdutoPorNome(nomeProduto);
+
+            if (produto == null)
+            {
+                return NotFound(mensagemProdutoNaoEncontrado);
+            }
+
+            ProdutoDTO produtoDto = _mapper.Map<ProdutoDTO>(produto);
+            return Ok(produtoDto);
+        }
+
+
         [HttpPost]
-        public IActionResult CriarProduto([FromBody] CriarProdutoViewModel produto)
+        public async Task<IActionResult> CriarProduto([FromBody] CriarProdutoViewModel produto)
         {
             if (!ModelState.IsValid)
             {
                 return ValidarEntrada();
             }
             Produto produtoCadastro = new Produto(produto.nomeProduto, produto.quantidadeEstoque, produto.valorProduto);
-            produtosDbContext.Produtos.Add(produtoCadastro);
+            produtoCadastro = await produtoRepository.AdicionarProduto(produtoCadastro);
 
             ProdutoDTO produtoDTO = _mapper.Map<ProdutoDTO>(produtoCadastro);
 
@@ -70,7 +85,7 @@ namespace Produtos_api.Controllers
 
         
         [HttpPut("{id}")]
-        public IActionResult AtualizarProduto(Guid id, [FromBody] AtualizarProdutoViewModel produto)
+        public async Task<IActionResult> AtualizarProduto(Guid id, [FromBody] AtualizarProdutoViewModel produto)
         {
 
             if (!ModelState.IsValid)
@@ -78,17 +93,15 @@ namespace Produtos_api.Controllers
                 return ValidarEntrada();
             }
 
-            Produto produtoAtualizado = produtosDbContext.Produtos.SingleOrDefault(pro => pro.ID == id);
+            Produto produtoAtualizado = await produtoRepository.AtualizarProduto(id,produto.nomeProduto, produto.quantidadeEstoque, produto.valorProduto );
 
             if(produtoAtualizado == null)
             {
                 return NotFound(mensagemProdutoNaoEncontrado);
             }
 
-            produtoAtualizado.Nome = produto.nomeProduto ?? produtoAtualizado.Nome;
-            produtoAtualizado.Valor = produto.valorProduto ?? produtoAtualizado.Valor;
-            produtoAtualizado.Estoque = produto.quantidadeEstoque ?? produtoAtualizado.Estoque;
 
+           
             ProdutoDTO produtoDto = _mapper.Map<ProdutoDTO>(produtoAtualizado);
 
 
@@ -97,17 +110,15 @@ namespace Produtos_api.Controllers
 
       
         [HttpDelete("{id}")]
-        public IActionResult DeletarProduto(Guid id)
+        public async Task<IActionResult> DeletarProduto(Guid id)
         {
-          
-            Produto produtoDeleteado = produtosDbContext.Produtos.SingleOrDefault(pro => pro.ID == id);
 
-            if (produtoDeleteado == null)
+            bool? deletou = await produtoRepository.DeletarProduto(id);
+
+            if(deletou == null)
             {
                 return NotFound(mensagemProdutoNaoEncontrado);
             }
-
-            produtosDbContext.Produtos.Remove(produtoDeleteado);
 
             return NoContent();
 

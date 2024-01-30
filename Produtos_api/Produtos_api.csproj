@@ -12,7 +12,6 @@
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.15" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
@@ -20,22 +19,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Controllers\" />
-    <None Remove="DBContext\" />
-    <None Remove="Domain\" />
-    <None Remove="Domain\Models\" />
-    <None Remove="Domain\Dtos\" />
     <None Remove="Application\" />
     <None Remove="Application\VIewModels\" />
     <None Remove="Application\Mappers\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
-    <Folder Include="DBContext\" />
-    <Folder Include="Domain\" />
-    <Folder Include="Domain\Models\" />
-    <Folder Include="Domain\Dtos\" />
     <Folder Include="Application\" />
     <Folder Include="Application\VIewModels\" />
     <Folder Include="Application\Mappers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Produtos_api.Domain\Produtos_api.Domain.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Produtos_api.DataBase\Produtos_api.DataBase.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>
