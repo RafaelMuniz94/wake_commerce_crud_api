@@ -27,12 +27,14 @@
     <None Remove="Application\" />
     <None Remove="Application\VIewModels\" />
     <None Remove="Application\Mappers\" />
+    <None Remove="Application\Middlewares\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Application\" />
     <Folder Include="Application\VIewModels\" />
     <Folder Include="Application\Mappers\" />
+    <Folder Include="Application\Middlewares\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Produtos_api.Domain\Produtos_api.Domain.csproj">

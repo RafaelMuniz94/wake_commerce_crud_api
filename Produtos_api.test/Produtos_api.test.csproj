@@ -29,11 +29,13 @@
     <None Remove="Controllers\" />
     <None Remove="TestIntegracao\" />
     <None Remove="Repository\" />
+    <None Remove="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="TestIntegracao\" />
     <Folder Include="Repository\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Produtos_api\Produtos_api.csproj" />

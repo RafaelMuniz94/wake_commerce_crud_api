@@ -8,20 +8,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Produtos_api.DataBase;
+using Produtos_api.DataBase.Repository;
+using Produtos_api.Domain.Models;
+using Produtos_api.test.Repository;
 
 namespace Produtos_api.test.TestIntegracao
 {
-	// Criando um Factory customizado, dessa forma, sera possivel trocar o tipo de banco que utilizo para testes
-	// Evitando que o banco esteja sujo quando o teste de integracao executar.
-    // Essa classe ira utilizar reflecions para obter as configuracoes feitas na startup da api (Produtos_api/Program.cs)
-	public class WebApplicationTest<TProgram>: WebApplicationFactory<TProgram> where TProgram : class
-	{
+
+    public class WebApplicationTestInvalido<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
+    {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            
+
+
             builder.ConfigureServices(services =>
             {
-            
+
                 // As linhas abaixo irao limpar o contexto da startup e a conexao caso ela exista
                 var dbContext = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ProdutoDbContext>));
                 services.Remove(dbContext);
@@ -32,12 +34,16 @@ namespace Produtos_api.test.TestIntegracao
 
                 services.Remove(dbConnection);
 
+                var repositoryContext = services.SingleOrDefault(d => d.ServiceType ==
+                typeof(IProdutoRepository));
+
+                services.Remove(repositoryContext);
+
                 // Criando a conexao que sera utilizada apenas durante os testes de integracao
                 services.AddSingleton<DbConnection>(containerAplicacao =>
                 {
                     // Criando conexao em memoria
                     var conexao = new SqliteConnection("mode=memory;cache=shared");
-
                     return conexao;
                 });
 
@@ -47,7 +53,8 @@ namespace Produtos_api.test.TestIntegracao
                     options.UseSqlite(conexao);
                 });
 
-            
+                services.AddTransient<IProdutoRepository, FakeProdutoRepositoryInvalido>();
+
             });
             builder.UseEnvironment("Development");
         }

@@ -38,6 +38,7 @@ namespace Produtos_api.Controllers
                 filtro = ordernarBuscaViewModel.FiltroCampo.ToString();
             }
 
+            
 
             List<Produto> produtos = await produtoRepository.RetornarListaProdutos(filtro);
             List<ProdutoDTO> produtoDto = _mapper.Map<List<ProdutoDTO>>(produtos);

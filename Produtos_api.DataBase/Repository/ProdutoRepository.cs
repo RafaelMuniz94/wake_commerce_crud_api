@@ -73,8 +73,8 @@ namespace Produtos_api.DataBase.Repository
         public async Task<List<Produto>> RetornarListaProdutos(string? campo=null)
         {
             List<Produto> listaProdutos = new List<Produto>();
-            
-            if(campo != null)
+        
+            if (campo != null)
             {
 
                 switch (campo)

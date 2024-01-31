@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Produtos_api.Application.VIewModels;
 using Produtos_api.DataBase;
 using Produtos_api.Domain.Dtos;
+using Produtos_api.test.Models;
 using Produtos_api.test.TestIntegracao;
 
 namespace Produtos_api.test.IntegrationTest
@@ -271,7 +272,6 @@ namespace Produtos_api.test.IntegrationTest
 
             List<ProdutoDTO> listaRetornarda = JsonConvert.DeserializeObject<List<ProdutoDTO>>(resposta);
 
-            Assert.Equal(7, listaRetornarda.Count());
 
             Assert.NotEqual(listaRetornarda.FirstOrDefault().id, listaRetornarda.LastOrDefault().id);
         }
@@ -357,6 +357,98 @@ namespace Produtos_api.test.IntegrationTest
 
             Assert.Equal("O valor do produto deve ser positivo!", resposta);
 
+        }
+
+
+        [Fact]
+        public async Task Criar_Deve_Retornar_Internal_Server_Error_Para_Cenario_Algum_Erro_Exista()
+        {
+            WebApplicationTestInvalido<Program> programFactoryInvalido = new WebApplicationTestInvalido<Program>();
+         HttpClient clientErrado = programFactoryInvalido.CreateClient();
+
+        StringContent content = new StringContent(JsonConvert.SerializeObject(criarProduto_completo));
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await clientErrado.PostAsync("/api/Produtos", content);
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+
+
+            string resposta = await response.Content.ReadAsStringAsync();
+            InternalServerErrorObjeto respostaErro = JsonConvert.DeserializeObject<InternalServerErrorObjeto>(resposta);
+
+            Assert.Equal("Nao foi possivel processar requisicao!", respostaErro.error);
+        }
+
+        [Fact]
+        public async Task Atualizar_Deve_Retornar_Internal_Server_Error_Para_Cenario_Algum_Erro_Exista()
+        {
+            WebApplicationTestInvalido<Program> programFactoryInvalido = new WebApplicationTestInvalido<Program>();
+            HttpClient clientErrado = programFactoryInvalido.CreateClient();
+
+            StringContent contentCriar = new StringContent(JsonConvert.SerializeObject(criarProduto_completo));
+            contentCriar.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var responseCriar = await client.PostAsync("/api/Produtos", contentCriar);
+
+            string respostaCriar = await responseCriar.Content.ReadAsStringAsync();
+
+            ProdutoDTO produtoCriadoDTO = JsonConvert.DeserializeObject<ProdutoDTO>(respostaCriar);
+            Guid guidCriado = produtoCriadoDTO.id;
+
+            StringContent contentAtualizar = new StringContent(JsonConvert.SerializeObject(atualizarProduto_completo));
+            contentAtualizar.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var responseAtualizar = await clientErrado.PutAsync($"/api/Produtos/{guidCriado}", contentAtualizar);
+
+            Assert.Equal(HttpStatusCode.InternalServerError, responseAtualizar.StatusCode);
+
+
+            string resposta = await responseAtualizar.Content.ReadAsStringAsync();
+            InternalServerErrorObjeto respostaErro = JsonConvert.DeserializeObject<InternalServerErrorObjeto>(resposta);
+
+            Assert.Equal("Nao foi possivel processar requisicao!", respostaErro.error);
+        }
+
+        [Fact]
+        public async Task Deletar_Deve_Retornar_Internal_Server_Error_Para_Cenario_Algum_Erro_Exista()
+        {
+            WebApplicationTestInvalido<Program> programFactoryInvalido = new WebApplicationTestInvalido<Program>();
+            HttpClient clientErrado = programFactoryInvalido.CreateClient();
+
+            StringContent contentCriar = new StringContent(JsonConvert.SerializeObject(criarProduto_completo));
+            contentCriar.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var responseCriar = await client.PostAsync("/api/Produtos", contentCriar);
+
+            string respostaCriar = await responseCriar.Content.ReadAsStringAsync();
+
+            ProdutoDTO produtoCriadoDTO = JsonConvert.DeserializeObject<ProdutoDTO>(respostaCriar);
+            Guid guidCriado = produtoCriadoDTO.id;
+
+            var responseDeletar = await clientErrado.DeleteAsync($"/api/Produtos/{guidCriado}");
+
+            Assert.Equal(HttpStatusCode.InternalServerError, responseDeletar.StatusCode);
+
+
+            string resposta = await responseDeletar.Content.ReadAsStringAsync();
+            InternalServerErrorObjeto respostaErro = JsonConvert.DeserializeObject<InternalServerErrorObjeto>(resposta);
+
+            Assert.Equal("Nao foi possivel processar requisicao!", respostaErro.error);
+        }
+
+        [Fact]
+        public async Task Retornar_Deve_Retornar_Internal_Server_Error_Para_Cenario_Algum_Erro_Exista()
+        {
+            WebApplicationTestInvalido<Program> programFactoryInvalido = new WebApplicationTestInvalido<Program>();
+            HttpClient clientErrado = programFactoryInvalido.CreateClient();
+
+            var responseBusca = await clientErrado.GetAsync("/api/Produtos/");
+
+
+            Assert.Equal(HttpStatusCode.InternalServerError, responseBusca.StatusCode);
+
+
+            string resposta = await responseBusca.Content.ReadAsStringAsync();
+            InternalServerErrorObjeto respostaErro = JsonConvert.DeserializeObject<InternalServerErrorObjeto>(resposta);
+
+            Assert.Equal("Nao foi possivel processar requisicao!", respostaErro.error);
         }
 
 

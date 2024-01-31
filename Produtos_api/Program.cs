@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Produtos_api.Application.Mappers;
+using Produtos_api.Application.Middlewares;
 using Produtos_api.DataBase;
 using Produtos_api.DataBase.Repository;
 using Produtos_api.Domain.Models;
@@ -37,6 +38,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware(typeof(TratarErrorMiddleware));
 app.MapControllers();
 app.Run();
 
