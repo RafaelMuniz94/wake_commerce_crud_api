@@ -2,3 +2,6 @@ obj/
 appsettings.Development.json
 bin/
 .vs/
+*.db
+*.db-shm
+*.db-wal

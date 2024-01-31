@@ -76,24 +76,19 @@ namespace Produtos_api.DataBase.Repository
             
             if(campo != null)
             {
-                // Utilizando reflections para descobrir o campo que foi passado e utilizar para ordenacao
-                // Em cenarios que a classe seja maior, utilizar essa tecnica pode reduzir a performance e nao ser tao interessante.
 
-                PropertyDescriptor propriedadesProduto = TypeDescriptor.GetProperties(typeof(Produto)).Find(campo, true);
-                listaProdutos = await produtoContext.Produtos.OrderBy(prop => propriedadesProduto.GetValue(prop)).ToListAsync();
-
-                //switch (campo)
-                //{
-                //    case "Nome":
-                //        listaProdutos = await produtoContext.Produtos.OrderBy(prop => prop.Nome).ToListAsync();
-                //    break;
-                //    case "Estoque":
-                //        listaProdutos = await produtoContext.Produtos.OrderBy(prop => prop.Estoque).ToListAsync();
-                //        break;
-                //    case "Valor":
-                //        listaProdutos = await produtoContext.Produtos.OrderBy(prop => prop.Valor).ToListAsync();
-                //        break;
-                //}
+                switch (campo)
+                {
+                    case "Nome":
+                        listaProdutos = await produtoContext.Produtos.OrderBy(prop => prop.Nome).ToListAsync();
+                        break;
+                    case "Estoque":
+                        listaProdutos = await produtoContext.Produtos.OrderBy(prop => prop.Estoque).ToListAsync();
+                        break;
+                    case "Valor":
+                        listaProdutos = await produtoContext.Produtos.OrderBy(prop => prop.Valor).ToListAsync();
+                        break;
+                }
             }
             else
             {

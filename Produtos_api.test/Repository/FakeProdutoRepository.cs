@@ -61,14 +61,23 @@ namespace Produtos_api.test.Repository
 
         public async Task<List<Produto>> RetornarListaProdutos(string? campo = null)
         {
-           
 
             if (campo != null)
             {
 
-                PropertyDescriptor propriedadesProduto = TypeDescriptor.GetProperties(typeof(Produto)).Find(campo, true);
-                Produtos = Produtos.OrderBy(prop => propriedadesProduto.GetValue(prop)).ToList();
-     
+                switch (campo)
+                {
+                    case "Nome":
+                        return Produtos.OrderBy(prop => prop.Nome).ToList();
+                    case "Estoque":
+                        return Produtos.OrderBy(prop => prop.Estoque).ToList();
+                    case "Valor":
+                        return Produtos.OrderBy(prop => prop.Valor).ToList();
+                }
+            }
+            else
+            {
+                return Produtos;
             }
 
             return Produtos;

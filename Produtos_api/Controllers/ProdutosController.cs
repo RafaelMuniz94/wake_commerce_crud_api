@@ -28,10 +28,18 @@ namespace Produtos_api.Controllers
         }
        
         [HttpGet]
-        public async Task<IActionResult> RetornarProdutos()
+        public async Task<IActionResult> RetornarProdutos([FromQuery] OrdernarBuscaViewModel ordernarBuscaViewModel)
         {
-        
-            List<Produto> produtos = await produtoRepository.RetornarListaProdutos();
+
+            string? filtro = null;
+
+           if(ordernarBuscaViewModel.FiltroCampo != null && ordernarBuscaViewModel.FiltroCampo != OrderByEnum.None)
+            {
+                filtro = ordernarBuscaViewModel.FiltroCampo.ToString();
+            }
+
+
+            List<Produto> produtos = await produtoRepository.RetornarListaProdutos(filtro);
             List<ProdutoDTO> produtoDto = _mapper.Map<List<ProdutoDTO>>(produtos);
             return Ok(produtoDto);
         }
@@ -52,11 +60,16 @@ namespace Produtos_api.Controllers
             return Ok(produtoDto);
         }
 
-        [HttpGet("/")]
-        public async Task<IActionResult> RetornarProdutoPorNome([FromQuery] string nomeProduto)
+        [HttpGet("PorNome")]
+        public async Task<IActionResult> RetornarProdutoPorNome([FromQuery] BuscarPorNomeViewModel buscarPorNomeViewModel)
         {
 
-            Produto produto = await produtoRepository.RetornarProdutoPorNome(nomeProduto);
+            if (!ModelState.IsValid)
+            {
+                return RetornarBadRequestParaErrosDeValidacao();
+            }
+
+            Produto produto = await produtoRepository.RetornarProdutoPorNome(buscarPorNomeViewModel.nomeProduto);
 
             if (produto == null)
             {
@@ -73,7 +86,7 @@ namespace Produtos_api.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return ValidarEntrada();
+                return RetornarBadRequestParaErrosDeValidacao();
             }
             Produto produtoCadastro = new Produto(produto.nomeProduto, produto.quantidadeEstoque, produto.valorProduto);
             produtoCadastro = await produtoRepository.AdicionarProduto(produtoCadastro);
@@ -90,7 +103,7 @@ namespace Produtos_api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return ValidarEntrada();
+                return RetornarBadRequestParaErrosDeValidacao();
             }
 
             Produto produtoAtualizado = await produtoRepository.AtualizarProduto(id,produto.nomeProduto, produto.quantidadeEstoque, produto.valorProduto );
@@ -124,7 +137,7 @@ namespace Produtos_api.Controllers
 
         }
 
-        private IActionResult ValidarEntrada()
+        private IActionResult RetornarBadRequestParaErrosDeValidacao()
         {
             
            string errorMessages = string.Join("; ", ModelState.Values.SelectMany(model => model.Errors).Select(error => error.ErrorMessage));

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Produtos_api.Application.Mappers;
 using Produtos_api.DataBase;
 using Produtos_api.DataBase.Repository;
@@ -21,15 +22,22 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(ProdutoMapper)); // Configura processo de mapeamento do DTO.
 var app = builder.Build();
 
+using(var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ProdutoDbContext>();
+    context.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
 
-public partial class Program { } // Essa classe deve ser criada para que uma instancia seja criada pela classe de Teste de Integracao.
+public partial class Program { } // Essa linha deve ser inserida para que uma instancia seja criada pela classe de Teste de Integracao.

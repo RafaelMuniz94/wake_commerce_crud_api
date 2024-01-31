@@ -17,6 +17,8 @@ public class ProdutoDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         string tipoBase = configuracao["TipoBanco"];
+        
+
 
         if (string.IsNullOrEmpty(tipoBase) || tipoBase.ToUpper() == "SQLITE")
         {

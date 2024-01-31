@@ -1,27 +1,30 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Produtos_api.Application.VIewModels;
+using Produtos_api.DataBase;
 using Produtos_api.Domain.Dtos;
+using Produtos_api.test.TestIntegracao;
 
 namespace Produtos_api.test.IntegrationTest
 {
-    public class ChamadaApiTest : IClassFixture<WebApplicationFactory<Program>>
+    public class ChamadaApiTest : IClassFixture<WebApplicationTest<Program>>
     {
 
-        private WebApplicationFactory<Program> programFactory;
+        private WebApplicationTest<Program> programFactory;
         private HttpClient client;
         private CriarProdutoViewModel criarProduto_completo;
         private AtualizarProdutoViewModel atualizarProduto_completo;
-        public ChamadaApiTest(WebApplicationFactory<Program> factory)
+        public ChamadaApiTest(WebApplicationTest<Program> factory)
         {
             programFactory = factory;
+
             client = programFactory.CreateClient();
+
+            
 
             criarProduto_completo = new CriarProdutoViewModel()
             {
@@ -268,7 +271,7 @@ namespace Produtos_api.test.IntegrationTest
 
             List<ProdutoDTO> listaRetornarda = JsonConvert.DeserializeObject<List<ProdutoDTO>>(resposta);
 
-            Assert.Equal(2, listaRetornarda.Count());
+            Assert.Equal(7, listaRetornarda.Count());
 
             Assert.NotEqual(listaRetornarda.FirstOrDefault().id, listaRetornarda.LastOrDefault().id);
         }

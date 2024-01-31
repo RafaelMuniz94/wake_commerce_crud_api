@@ -22,23 +22,12 @@ public class ProdutosControllerTest
     private readonly IProdutoRepository produtoRepository;
     private CriarProdutoViewModel criarProduto_Completo;
     private AtualizarProdutoViewModel atualizarProduto_completo;
-    ProdutosController controller_valido;
+    private OrdernarBuscaViewModel OrdernarBuscaViewModel_vazio;
+    private ProdutosController controller_valido;
     private IMapper _mapper;
 
     public ProdutosControllerTest()
     {
-        //var mockDbContext = new Mock<ProdutoDbContext>();
-        //var mockDbProdutos = new Mock<DbSet<Produto>>();
-
-        //mockDbProdutos.As<IQueryable<Produto>>().Setup(m => m.Provider).Returns(listaProdutos.Provider);
-        //mockDbProdutos.As<IQueryable<Produto>>().Setup(m => m.Expression).Returns(listaProdutos.Expression);
-        //mockDbProdutos.As<IQueryable<Produto>>().Setup(m => m.ElementType).Returns(listaProdutos.ElementType);
-        //mockDbProdutos.As<IQueryable<Produto>>().Setup(m => m.GetEnumerator()).Returns(() => listaProdutos.GetEnumerator());
-
-
-        //mockDbContext.Setup(prop => prop.Produtos).Returns(mockDbProdutos.Object);
-
-        //produtosDbContext_Valido = mockDbContext.Object;
 
         produtoRepository = new FakeProdutoRepository();
 
@@ -60,15 +49,20 @@ public class ProdutosControllerTest
             valorProduto = 200
         };
 
+        OrdernarBuscaViewModel_vazio = new OrdernarBuscaViewModel
+        {
+            FiltroCampo = null
+        };
+
         controller_valido = new ProdutosController(produtoRepository, _mapper);
     }
 
     #region Testes Positivos
     [Fact]
-    public async void Deve_Retornar_Lista_De_Produtos()
+    public async void Deve_Retornar_Lista_De_Produtos_Sem_Ordenar()
     {
 
-        var resultado = await controller_valido.RetornarProdutos();
+        var resultado = await controller_valido.RetornarProdutos(OrdernarBuscaViewModel_vazio);
 
         //Validando se o objeto recebido é do tipo correto, garantindo que o status code definido foi respeitado
         Assert.IsType<OkObjectResult>(resultado);
@@ -325,7 +319,7 @@ public class ProdutosControllerTest
     {
         Guid guidProdutoDeletado = new Guid("81dac77a-70af-4a62-803c-543365d56b1c");
 
-        var resultadoBuscaListaInicial = await controller_valido.RetornarProdutos() as OkObjectResult;
+        var resultadoBuscaListaInicial = await controller_valido.RetornarProdutos(OrdernarBuscaViewModel_vazio) as OkObjectResult;
 
         var listaInicial = resultadoBuscaListaInicial.Value as List<ProdutoDTO>;
 
@@ -342,7 +336,7 @@ public class ProdutosControllerTest
 
         Assert.NotNull(objetoRetornado);
 
-        var resultadoBuscaListaFinal = await controller_valido.RetornarProdutos() as OkObjectResult;
+        var resultadoBuscaListaFinal = await controller_valido.RetornarProdutos(OrdernarBuscaViewModel_vazio) as OkObjectResult;
 
         var listaFinal = resultadoBuscaListaFinal.Value as List<ProdutoDTO>;
 
@@ -366,41 +360,147 @@ public class ProdutosControllerTest
 
     }
 
+    [Fact]
+    public async void Deve_Retornar_Produto_Por_Nome_Quando_Valido()
+    {
+        // Arrange
+        var buscarPorNomeViewModel = new BuscarPorNomeViewModel
+        {
+            nomeProduto = "Produto C"
+        };
+
+        // Act
+        var resultado = await controller_valido.RetornarProdutoPorNome(buscarPorNomeViewModel);
+
+        // Assert
+        Assert.IsType<OkObjectResult>(resultado);
+
+        OkObjectResult objetoRetornado = resultado as OkObjectResult;
+
+        Assert.NotNull(objetoRetornado);
+
+        // Validar se o objeto apresenta o DTO correto
+        Assert.IsType<ProdutoDTO>(objetoRetornado.Value);
+        var produto = objetoRetornado.Value as ProdutoDTO;
+
+        Assert.NotNull(produto);
+
+        // Validar se os valores estão corretos
+        Assert.Equal(new Guid("81dac77a-70af-4a62-803c-543365d56b1c"), produto.id);
+        Assert.Equal(4, produto.quantidadeEstoque);
+        Assert.Equal("Produto C", produto.nomeProduto);
+        Assert.Equal(40.2, produto.valorProduto);
+    }
+
+    [Fact]
+    public async void Deve_Retornar_Lista_De_Produtos_Ordenada_Por_Nome()
+    {
+        var ordernarBuscaViewModel = new OrdernarBuscaViewModel
+        {
+            FiltroCampo = OrderByEnum.Nome
+        };
+
+        var resultado = await controller_valido.RetornarProdutos(ordernarBuscaViewModel);
+
+        Assert.IsType<OkObjectResult>(resultado);
+
+        OkObjectResult objetoRetornado = resultado as OkObjectResult;
+
+        Assert.NotNull(objetoRetornado);
+
+        Assert.IsType<List<ProdutoDTO>>(objetoRetornado.Value);
+        var listaOrdenada = (objetoRetornado.Value as List<ProdutoDTO>).ToList();
+
+        Assert.Equal("Produto A", listaOrdenada[0].nomeProduto);
+        Assert.Equal("Produto B", listaOrdenada[1].nomeProduto);
+        Assert.Equal("Produto C", listaOrdenada[2].nomeProduto);
+        Assert.Equal("Produto D", listaOrdenada[3].nomeProduto);
+        Assert.Equal("Produto E", listaOrdenada[4].nomeProduto);
+    }
+
+    [Fact]
+    public async void Deve_Retornar_Lista_De_Produtos_Ordenada_Por_Valor()
+    {
+        var ordernarBuscaViewModel = new OrdernarBuscaViewModel
+        {
+            FiltroCampo = OrderByEnum.Valor
+        };
+
+        var resultado = await controller_valido.RetornarProdutos(ordernarBuscaViewModel);
+
+        Assert.IsType<OkObjectResult>(resultado);
+
+        OkObjectResult objetoRetornado = resultado as OkObjectResult;
+
+        Assert.NotNull(objetoRetornado);
+
+        Assert.IsType<List<ProdutoDTO>>(objetoRetornado.Value);
+        var listaOrdenada = (objetoRetornado.Value as List<ProdutoDTO>).ToList();
+
+        Assert.Equal(25.2, listaOrdenada[0].valorProduto);
+        Assert.Equal(30.0, listaOrdenada[1].valorProduto);
+        Assert.Equal(40.2, listaOrdenada[2].valorProduto);
+        Assert.Equal(100, listaOrdenada[3].valorProduto);
+        Assert.Equal(125.2, listaOrdenada[4].valorProduto);
+    }
+
+    [Fact]
+    public async void Deve_Retornar_Lista_De_Produtos_Ordenada_Por_Estoque()
+    {
+        var ordernarBuscaViewModel = new OrdernarBuscaViewModel
+        {
+            FiltroCampo = OrderByEnum.Estoque
+        };
+
+        var resultado = await controller_valido.RetornarProdutos(ordernarBuscaViewModel);
+
+        Assert.IsType<OkObjectResult>(resultado);
+
+        OkObjectResult objetoRetornado = resultado as OkObjectResult;
+
+        Assert.NotNull(objetoRetornado);
+
+        Assert.IsType<List<ProdutoDTO>>(objetoRetornado.Value);
+        var listaOrdenada = (objetoRetornado.Value as List<ProdutoDTO>).ToList();
+
+        Assert.Equal(0, listaOrdenada[0].quantidadeEstoque);
+        Assert.Equal(1, listaOrdenada[1].quantidadeEstoque);
+        Assert.Equal(2, listaOrdenada[2].quantidadeEstoque);
+        Assert.Equal(4, listaOrdenada[3].quantidadeEstoque);
+        Assert.Equal(5, listaOrdenada[4].quantidadeEstoque);
+    }
+
     #endregion
 
     #region Testes Negativos
 
     //[Fact]
-    //public void Nao_Deve_Criar_Produto_Quando_Nao_Receber_Nome()
+    //public async void Deve_Retornar_BadRequest_Busca_Por_Nome_Invalido()
     //{
-    //    CriarProdutoViewModel criar_Produto_SemNome = criarProduto_Completo;
-    //    criar_Produto_SemNome.nomeProduto = null;
+    //    // Arrange
+    //    var buscarPorNomeViewModelNegativo = new BuscarPorNomeViewModel
+    //    {
+    //        nomeProduto = null
+    //    };
 
-    //    var x = controller_valido.TryValidateModel(criar_Produto_SemNome);
-    //    Assert.NotNull(x);
+    //    // Act
+    //    var resultado = await controller_valido.RetornarProdutoPorNome(buscarPorNomeViewModelNegativo);
 
-    //    //controller_valido.ModelState.Clear();
-    //    //controller_valido.ModelState.AddModelError("nomeProduto", "Required");
+    //    // Assert
+    //    Assert.IsType<BadRequestObjectResult>(resultado);
 
-    //    //var modelState = controller_valido.ModelState;
+    //    BadRequestObjectResult objetoRetornado = resultado as BadRequestObjectResult;
 
-    //    //var resultado = controller_valido.CriarProduto(criar_Produto_SemNome);
+    //    Assert.NotNull(objetoRetornado);
 
-    //    //Assert.NotNull(resultado);
+    //    // Validar se o objeto apresenta os erros de validação corretos
+    //    Assert.IsType<SerializableError>(objetoRetornado.Value);
+    //    var erros = objetoRetornado.Value as SerializableError;
 
-    //    ////Validando se o objeto recebido é do tipo correto, garantindo que o status code definido foi respeitado
-    //    //Assert.IsType<BadRequestObjectResult>(resultado);
-
-    //    //BadRequestObjectResult objetoRetornado = resultado as BadRequestObjectResult;
-
-    //    //Assert.NotNull(objetoRetornado);
-    //    //Assert.Equal(400, objetoRetornado.StatusCode);
-    //    //Assert.Equal("Required", objetoRetornado.Value);
-
-    //    //Assert.True(modelState.Count == 1);
-    //    //Assert.True(modelState == 1);
+    //    Assert.NotNull(erros);
+    //    Assert.True(erros.ContainsKey("nomeProduto"));
+    //    Assert.Equal(new[] { "O nome do produto é obrigatório." }, erros["nomeProduto"] as string[]);
     //}
-
 
 
     #endregion
