@@ -5,6 +5,7 @@ using Produtos_api.Application.Middlewares;
 using Produtos_api.DataBase;
 using Produtos_api.DataBase.Repository;
 using Produtos_api.Domain.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,15 @@ builder.Services.AddSwaggerGen();
 
 //builder.Services.AddSingleton<ProdutosContext>(); // Adicionado objeto de contexto de banco de dados para servir como banco em memoria para desenvolvimento inicial
 builder.Services.AddAutoMapper(typeof(ProdutoMapper)); // Configura processo de mapeamento do DTO.
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Console(outputTemplate: "[{Level:u3}] {Message:lj} - {Properties:j}{NewLine}{Exception}")
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+
+
 var app = builder.Build();
 
 using(var scope = app.Services.CreateScope())
