@@ -5,7 +5,6 @@
 # Projeto Wake Commerce
 Desenvolva uma API para realizar o CRUD de Produtos.
 
-![Última Atualização](https://img.shields.io/github/last-commit/seu-usuario/seu-repositorio/main)
 
 ---
 ## Requisitos

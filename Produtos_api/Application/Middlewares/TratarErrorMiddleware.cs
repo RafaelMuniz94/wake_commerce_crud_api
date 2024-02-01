@@ -11,7 +11,7 @@ namespace Produtos_api.Application.Middlewares
     public class TratarErrorMiddleware
     {
         private readonly RequestDelegate proximaEtapa;
-        private readonly ILogger<ProdutosController> log;
+
 
         public TratarErrorMiddleware(RequestDelegate next)
         {

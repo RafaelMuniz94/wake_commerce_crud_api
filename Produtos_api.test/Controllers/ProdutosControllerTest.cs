@@ -472,36 +472,4 @@ public class ProdutosControllerTest
 
     #endregion
 
-    #region Testes Negativos
-
-    //[Fact]
-    //public async void Deve_Retornar_BadRequest_Busca_Por_Nome_Invalido()
-    //{
-    //    // Arrange
-    //    var buscarPorNomeViewModelNegativo = new BuscarPorNomeViewModel
-    //    {
-    //        nomeProduto = null
-    //    };
-
-    //    // Act
-    //    var resultado = await controller_valido.RetornarProdutoPorNome(buscarPorNomeViewModelNegativo);
-
-    //    // Assert
-    //    Assert.IsType<BadRequestObjectResult>(resultado);
-
-    //    BadRequestObjectResult objetoRetornado = resultado as BadRequestObjectResult;
-
-    //    Assert.NotNull(objetoRetornado);
-
-    //    // Validar se o objeto apresenta os erros de validação corretos
-    //    Assert.IsType<SerializableError>(objetoRetornado.Value);
-    //    var erros = objetoRetornado.Value as SerializableError;
-
-    //    Assert.NotNull(erros);
-    //    Assert.True(erros.ContainsKey("nomeProduto"));
-    //    Assert.Equal(new[] { "O nome do produto é obrigatório." }, erros["nomeProduto"] as string[]);
-    //}
-
-
-    #endregion
 }
