@@ -1,0 +1,168 @@
+{
+	"info": {
+		"_postman_id": "779dbaa2-fd9f-4a01-ad99-afaf87721ce9",
+		"name": "Wake Commerce",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32722764"
+	},
+	"item": [
+		{
+			"name": "Buscar Produtos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain_url}}/api/Produtos",
+					"host": [
+						"{{domain_url}}"
+					],
+					"path": [
+						"api",
+						"Produtos"
+					],
+					"query": [
+						{
+							"key": "FiltroCampo",
+							"value": "Valor",
+							"disabled": true
+						},
+						{
+							"key": "FiltroCampo",
+							"value": "Nome",
+							"disabled": true
+						},
+						{
+							"key": "FiltroCampo",
+							"value": "Estoque",
+							"disabled": true
+						},
+						{
+							"key": "FiltroCampo",
+							"value": "None",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Criar Produto",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n        \"nomeProduto\": \"Produto 6\",\r\n        \"quantidadeEstoque\": 9,\r\n        \"valorProduto\": 80\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain_url}}/api/Produtos",
+					"host": [
+						"{{domain_url}}"
+					],
+					"path": [
+						"api",
+						"Produtos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualizar Produto",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\r\n        \"nomeProduto\": \"Produto 7\",\r\n        \"quantidadeEstoque\": 12,\r\n        \"valorProduto\": 82\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain_url}}/api/Produtos/{{id}}",
+					"host": [
+						"{{domain_url}}"
+					],
+					"path": [
+						"api",
+						"Produtos",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar Produto por Nome",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain_url}}/api/Produtos/PorNome?nomeProduto=Produto 7",
+					"host": [
+						"{{domain_url}}"
+					],
+					"path": [
+						"api",
+						"Produtos",
+						"PorNome"
+					],
+					"query": [
+						{
+							"key": "nomeProduto",
+							"value": "Produto 7"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Buscar Produto por ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain_url}}/api/Produtos/{{id}}",
+					"host": [
+						"{{domain_url}}"
+					],
+					"path": [
+						"api",
+						"Produtos",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deletar Produto",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{domain_url}}/api/Produtos/{{id}}",
+					"host": [
+						"{{domain_url}}"
+					],
+					"path": [
+						"api",
+						"Produtos",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

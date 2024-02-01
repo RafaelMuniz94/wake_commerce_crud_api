@@ -116,6 +116,10 @@ Apesar de não estar diretamente ligada ao projeto, essa estrutura esta presente
 A pipeline `Cobertura de teste e Build`, presente no script `ScriptBuildTest.yml` é configurada para acionar em cada **push** na **branch principal (main)**. 
 No primeiro estágio, "**Compilar**", o código é clonado, o ambiente .NET é configurado, dependências são baixadas, e a compilação é executada,os artefatos são salvos. O segundo estágio, "**Testar**", é acionado após a compilação e realiza testes unitários usando os artefatos gerados anteriormente. Por fim, o estágio "**Gerar Assets**" depende dos estágios anteriores e baixa os artefatos da API, mantendo-os para possível deploy. 
 
+# Utils
+
+Essa pasta possui algumas utilidades para testar o ambiente, sendo uma collection do postman e um environment com algumas configurações para executar as chamadas da collection.
+
 ## Dependências utilizadas:
 
 - AutoMapper: Utilizada para mapeamento de DTOs
